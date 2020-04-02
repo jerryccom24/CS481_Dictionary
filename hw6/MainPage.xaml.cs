@@ -22,10 +22,24 @@ namespace hw6
             InitializeComponent();
         }
 
-        void Button_Clicked(object sender, EventArgs e)
+        async void Button_Clicked(object sender, EventArgs e)
         {
             HttpClient Client = new HttpClient();
+            Uri uri = new Uri("https://owlbot.info/api/v2/dictionary/" + WordInput + "?format=json");
 
+
+            HttpRequestMessage request = new HttpRequestMessage();
+            request.Method = HttpMethod.Get;
+            request.RequestUri = uri;
+
+
+            HttpResponseMessage response = null;
+            response = await Client.SendAsync(request);
+
+            if(response.IsSuccessStatusCode)
+            {
+                await DisplayAlert("Success","It worked...","OK");
+            }
         }
     }
 }
