@@ -16,88 +16,92 @@ namespace hw6
     {
 
         public string WordInput { get; set; }
-        //public string type ="";
-        //public string desc ="";
-        //public string example="";
 
         public MainPage()
         {
             BindingContext = this;
             InitializeComponent();
+
         }
 
         async void Button_Clicked(object sender, EventArgs e)
         {
-            HttpClient Client = new HttpClient();
+            HttpClient Client = new HttpClient();//Our Client for utilizing http
+
+            //Basically, our link, We need to inject the Word that the user wants to search in the dictionary into the URI
             Uri uri = new Uri("https://owlbot.info/api/v2/dictionary/" + WordInput + "?format=json");
 
-
+            //Our message object that will be used with our uri to get a response
             HttpRequestMessage request = new HttpRequestMessage();
             request.Method = HttpMethod.Get;
-            request.RequestUri = uri;
+            request.RequestUri = uri; //assign uri to the HTTP request message
 
 
-            HttpResponseMessage response = null;
+            HttpResponseMessage response = null;// set response equal to null for now.
 
-            //---
+            
             
             try
             {
-                response = await Client.SendAsync(request);
+                response = await Client.SendAsync(request);//send our request with the client and we will get the response here
             }
             catch (Exception ex)
             {
-                //if it fails, displays an alert to user and ends the function
-                await DisplayAlert("Connection error", "Sorry, something went wrong! Make sure you are connected to the Internet", "OK");
+                //otherwise if this fails, then the user may not be connected to the interent, therefore return
+                await DisplayAlert("Oops!", "You are not connected to the internet", "OK");
                 return;
             }
-            //---
-            DictionaryItem[] Data = null;
 
+            //needs to be array in the case that Multiple objects are returned. However in our case we will only need to access Data[0]
+            DictionaryItem[] Data = null;//this wil be the data returned from our Http request as a DictionaryItem object (array of them)
 
-            if(response.IsSuccessStatusCode)
+            //If our response indicated a success status code, e.g in the rage of (200-299), or (not an error code)
+            if (response.IsSuccessStatusCode)
             {
-                //await DisplayAlert("Success","It worked...","OK");
-
-                string content = await response.Content.ReadAsStringAsync();
+                string json = await response.Content.ReadAsStringAsync();
 
                 try
                 {
-                    Data = DictionaryItem.FromJson(content);
+                    Data = DictionaryItem.FromJson(json); //Transfers all of that unreadable Json craziness into an nice object that we can access
                 }
                 catch (Exception ex)
                 {
-                    //if json is bad, displays error message and returns the function
-                    await DisplayAlert("Data error", "Something went wrong while retrieving data. Please try again!", "OK");
+                    //otherwise Json could not be translated or yielded no results 
+                    await DisplayAlert("Oops!", "There was an issue with your search. Please try again.", "OK");
                     return;
                 }
                 
+                string t = ""; //type
+                string d = ""; //description
+                string eg = ""; //example
 
-
-                for (int i = 0; i < Data.Length; i++)
+                //Check to make sure data was returned.c
+                if (Data[0].Type != null)
                 {
-                    string type1 = "";
-                    string desc1 = "";
-                    string example1 = "";
-                    //ifs are needed because some fields may be null
-                    if (Data[i].Type != null)
-                    {
-                        type1 = Data[i].Type;
-                        this.type.Text = type1;
-                        
-                    }
-                    if (Data[i].Definition != null)
-                    {
-                        desc1 = Data[i].Definition;
-                        this.desc.Text = desc1;
-                    }
-                    if (Data[i].Example != null)
-                    {
-                        example1 = Data[i].Example;
-                        this.example.Text = example1;
-                    }
-
+                    t = Data[0].Type;
+                    this.type.Text = t;                    
                 }
+                else
+                    this.type.Text = " ";//Make empty in the case that there is no data for the field
+
+                if (Data[0].Definition != null)
+                {
+                    d = Data[0].Definition;
+                    this.desc.Text = d;
+                }
+                else
+                    this.desc.Text = " ";//Make empty in the case that there is no data for the field
+
+
+                if (Data[0].Example != null)
+                {
+                    eg = Data[0].Example;
+                    this.example.Text = eg;
+                }
+                else
+                    this.example.Text = " ";//Make empty in the case that there is no data for the field
+
+
 
             }
         }
