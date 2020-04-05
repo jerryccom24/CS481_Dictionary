@@ -3,8 +3,13 @@
     <StackLayout>
         <!-- Place new controls here -->
         <Label Text="Search a Word in the Dictionary!" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
-        <Entry Placeholder="Enter word..." Text="{Binding WordInput}"></Entry>
+        <Entry Placeholder="Enter word..." Text="{Binding WordInput}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Entry>
         <Button Text="Search" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Clicked="Button_Clicked"></Button>
+
+
+        <Label x:Name="type" Text ="" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+        <Label x:Name="desc" Text ="" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+        <Label x:Name="example" Text ="" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
 
     </StackLayout>
 </ContentPage>
