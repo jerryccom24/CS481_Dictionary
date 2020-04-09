@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Xamarin.Forms;
+using Xamarin.Essentials;
 
 namespace hw6
 {
@@ -15,12 +16,14 @@ namespace hw6
     public partial class MainPage : ContentPage
     {
 
-        public string WordInput { get; set; }
+        public string WordInput { get; set; }// Our Entry value for the word
 
         public MainPage()
         {
             BindingContext = this;
             InitializeComponent();
+
+            
 
         }
 
@@ -52,7 +55,7 @@ namespace hw6
                 return;
             }
 
-            //needs to be array in the case that Multiple objects are returned. However in our case we will only need to access Data[0]
+            //needs to be array in the case that Multiple objects are returned. However in our case we will only need to access Data[0] for only 1 definition
             DictionaryItem[] Data = null;//this wil be the data returned from our Http request as a DictionaryItem object (array of them)
 
             //If our response indicated a success status code, e.g in the rage of (200-299), or (not an error code)
@@ -66,43 +69,67 @@ namespace hw6
                 }
                 catch (Exception ex)
                 {
-                    //otherwise Json could not be translated or yielded no results 
+                    //otherwise Json could not be transferred
                     await DisplayAlert("Oops!", "There was an issue with your search. Please try again.", "OK");
                     return;
                 }
+
                 
+                
+                   
+                //string holder variables 
                 string t = ""; //type
-                string d = ""; //description
+                string d = ""; //definition
                 string eg = ""; //example
 
-                //Check to make sure data was returned.c
+
+
+                //Check to make sure data was returned
                 if (Data[0].Type != null)
                 {
                     t = Data[0].Type;
-                    this.type.Text = t;                    
+                    this.type.Text = t;
                 }
                 else
-                    this.type.Text = " ";//Make empty in the case that there is no data for the field
+                    this.type.Text = "N/A";//Make NA in the case that there is no data for the field
 
+                //Check to make sure data was returned 
                 if (Data[0].Definition != null)
                 {
                     d = Data[0].Definition;
-                    this.desc.Text = d;
+                    this.definition.Text = d;
                 }
                 else
-                    this.desc.Text = " ";//Make empty in the case that there is no data for the field
+                    this.definition.Text = "N/A";//Make NA in the case that there is no data for the field
 
-
+                //Check to make sure data was returned for e.g.
                 if (Data[0].Example != null)
                 {
                     eg = Data[0].Example;
                     this.example.Text = eg;
                 }
                 else
-                    this.example.Text = " ";//Make empty in the case that there is no data for the field
+                    this.example.Text = "N/A";//Make NA in the case that there is no data for the field
 
 
+                
+            }
+        }
 
+        //Function will use Xamarin Essentials to easily check network access state
+        //It will display the appropriate message depending on state
+        // Sourced/Learned this from https://docs.microsoft.com/en-us/xamarin/essentials/connectivity?tabs=android
+        void Check_Connection(object sender, EventArgs e)
+        {
+            var ConnectionState = Connectivity.NetworkAccess;
+
+            if (ConnectionState == NetworkAccess.Internet)
+            {
+                DisplayAlert("Alert", "You are connected to the Internet", "Ok");
+            }
+            else
+            {
+                DisplayAlert("Alert", "You are NOT connected to the Internet", "Ok");
             }
         }
     }
